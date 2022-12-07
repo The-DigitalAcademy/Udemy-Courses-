@@ -1,1 +1,218 @@
+/* Generated Code (IMPORT) */
+/* Source File: Udemy.csv */
+/* Source Path: /home/u62791201/sasuser.v94 */
+/* Code generated on: 06/12/2022 13:35 */
+
+%web_drop_table(WORK.IMPORT);
+
+
+FILENAME REFFILE '/home/u62791201/sasuser.v94/Udemy.csv';
+
+PROC IMPORT DATAFILE=REFFILE
+	DBMS=CSV
+	OUT=WORK.IMPORT;
+	GETNAMES=YES;
+RUN;
+
+PROC CONTENTS DATA=WORK.IMPORT; RUN;
+
+
+%web_open_table(WORK.IMPORT);
+
+
+
+/*deleting*/
+
+Data courses_delete;
+set work.courses;
+
+if course_id = '288942' then delete;
+
+run;
+
+
+
+/*editing the course_title*/
+%let New_Subject = 'Musical Instruments';
+%let old_subject = '2014-01-27T20:58:16';
+data new_subject;
+    set  work.import;
+   if subject = &old_subject then subject = &New_Subject;
+run;
+
+/*editing the course_title*/
+%let new_course_title = '1 Hour HTML Basics';
+%let old_course_title = '1 Hour HTML';
+data new_course_title;
+    set  work.courses;
+   if Course_title = &old_course_title then course_title = &new_course_title ;
+run;
+
+
+
+
+
+
+/*Searching*/
+
+proc print data=work.import;
+where course_title = 'A Very Complete Introduction To Laravel'and level = 'All Levels' and course_id= 281690;
+run;
+
+/*adding a course*/
+data work.import; 
+set work.import end=course_title;
+
+if course then do;
+    course_id =	21326716;
+    course = "Sas Programmer";
+	is_paid = 'True';
+	price = 30;
+	num_subscribers = 100;
+	num_reviews	= 198;
+	num_lectures = 56;
+	level = 'All Levels';
+	content_duration = 1 ;
+	published_timestamp	= 201408230508140000;
+	subject ='Web Development';
+
+  
+   end;
+
+run;
+
+run;
+
+
+/*Subject with highest Subscribers*/
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.IMPORT;
+title height=14pt "Subject with highest Subscribers";
+	vbar subject / response=num_subscribers group=num_subscribers 
+		groupdisplay=cluster;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+
+run;
+
+/*Counting Monthly Subscribers Per Year*/
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.IMPORT;
+title height=14pt "Counti Monthly Subscribers Per Year";
+	vline PMonth / response=num_subscribers group=Pyear;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+
+/*Month with the highest Subscribers*/
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.UDEMY;
+	title height=14pt "Month With The Highest Subs";
+	vline PMonth / response=num_subscribers;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+title;
+
+
+/*Year with highest subs*/
+ods graphics / reset width=6.4in height=4.8in imagemap;
+title height=14pt "Year with highest subs";
+proc sgplot data=WORK.IMPORT;
+	vline Pyear / response=num_subscribers;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+
+/*Level With High Sub*/
+
+proc template;
+title height=14pt "Level With High Subscribers";
+	define statgraph SASStudio.Pie;
+		begingraph;
+		layout region;
+		piechart category=level / stat=pct;
+		endlayout;
+		endgraph;
+	end;
+run;
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgrender template=SASStudio.Pie data=WORK.IMPORT;
+run;
+
+ods graphics / reset;
+
+
+/*Finding how subscribers paid in each subject*/
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.IMPORT;
+	title height=14pt "Count free/paid subscribers from each subject";
+	vbar subject / response=course_id group=is_paid groupdisplay=cluster;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+title;
+
+/*subject with highest reviews*/
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.IMPORT;
+	title height=14pt "Subject With High Reviews";
+	vbar subject / response=num_reviews;
+	yaxis grid;
+run;
+
+
+
+
+
+
+/*Subscriber count free or paid*/
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+proc sgplot data=WORK.IMPORT;
+	title height=14pt "Subscriber count free or paid";
+	vbar is_paid / response=num_subscribers;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+title;
+
+
+
+/*Cost per subject*/
+ods graphics / reset width=6.4in height=4.8in imagemap;
+title height=14pt "Cost per subject";
+proc sgplot data=WORK.IMPORT;
+	vbar subject / response=price;
+	yaxis grid;
+run;
+
+ods graphics / reset;
+title "Cost Per Subject";
+
+ods graphics / reset width=6.4in height=4.8in imagemap;
+
+
+
+
+
+
+
 
